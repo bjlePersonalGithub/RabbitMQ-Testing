@@ -34,4 +34,4 @@ COPY ./Source/Python/ /app/bin/
 RUN adduser -D appUser
 USER appUser
 
-CMD ["/usr/bin/python", "-u", "/app/bin/queue_start.py", "publisher"]
+CMD ["/usr/bin/python", "-u", "/app/bin/queue_start.py", "producer"]

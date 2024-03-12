@@ -6,13 +6,15 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
+      RABBITMQ_HOST: "test_queue_host"
       RABBITMQ_DEFAULT_USER: "user"
       RABBITMQ_DEFAULT_PASS: "password"
-  pubsub:
-    image: pubsub
-    container_name: pubsub
-    build: .
-    dockerfile: Dockerfile
+  pubcon:
+    image: pubcon
+    container_name: pubcon
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
