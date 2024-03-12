@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  rabbitmq:
+    image: rabbitmq:3.13.0-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "user"
+      RABBITMQ_DEFAULT_PASS: "password"
+  pubsub:
+    image: pubsub
+    container_name: pubsub
+    build: .
+    dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USER: "user"
+      RABBITMQ_PASS: "password"
+    volumes:
+      - ./Source/Python:/app/bin/
