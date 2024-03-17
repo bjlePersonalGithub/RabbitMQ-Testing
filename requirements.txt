@@ -1,2 +1,5 @@
 pika
 pydantic
+psycopg[binary,pool]
+python-dotenv
+pyyaml

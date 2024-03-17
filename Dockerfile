@@ -8,6 +8,7 @@ RUN apk add \
     make \
     g++ \
     libxslt-dev \
+    libpq-dev \
     python3-dev \
     py3-pip 
 

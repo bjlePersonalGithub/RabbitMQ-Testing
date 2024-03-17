@@ -1,6 +1,10 @@
 import sys
+import psycopg
+
 from pydantic import BaseModel 
 from queuing.queue_connection import QueueConnection
+from util.logging_util import logger
+
 
 
 class TestModel(BaseModel):
@@ -15,11 +19,24 @@ class QueueProducer():
 
         
     def start(self):
-        print("Publisher started")
+        logger.info("Publisher started")
+
+        # Connect to postgres database
+        try:
+            db_connection = psycopg.connect(
+                dbname="test_db",
+                user="test_user",
+                password="test_password",
+                host="localhost",
+                port="5432"
+            )
+        except:
+            logger.error("Error connecting to database")
+            return
         queue = QueueConnection()
         body = self.model_data.model_dump_json()
 
-        print(f"Publishing message: {body}")
+        logger.info(f"Publishing message: {body}")
         try:
             queue.publish_message(body)
             print("Message published")
@@ -35,8 +52,8 @@ class QueueConsumer():
 if __name__ == "__main__":
     op = None if len(sys.argv) == 1 else sys.argv[1]
     if op and op == "producer":
-        print("Starting publisher")
+        logger.info("Starting publisher")
         QueueProducer().start()
     if op and op == "consumer":
-        print("Starting consumer")
+        logger.info("Starting consumer")
         QueueConsumer().start()
