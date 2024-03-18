@@ -44,6 +44,7 @@ class QueueProducer():
         database_host = os.environ.get("DATABASE_HOST")
         # Connect to postgres database
         try:
+            logger.info("Connecting to database")
             db_connection = psycopg.connect(
                 dbname=database_name,
                 user=database_user,
@@ -51,6 +52,10 @@ class QueueProducer():
                 host=database_host,
                 port="5432"
             )
+            cur = db_connection.cursor()
+            db_connection.commit()
+            cur.close()
+            db_connection.close()
         except Exception as e:
             logger.error(f"Error connecting to database: {e}")
             return
