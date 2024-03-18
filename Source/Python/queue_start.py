@@ -1,10 +1,13 @@
 import sys
 import psycopg
+import os
+import time
+
 
 from pydantic import BaseModel 
 from queuing.queue_connection import QueueConnection
 from util.logging_util import logger
-
+from dotenv import load_dotenv
 
 
 class TestModel(BaseModel):
@@ -21,17 +24,35 @@ class QueueProducer():
     def start(self):
         logger.info("Publisher started")
 
+        #Load environment variables into variables
+        if os.environ.get("DATABASE_NAME") is None:
+            logger.error("DATABASE_NAME environment variable is missing")
+            return
+        if os.environ.get("DATABASE_USER") is None:
+            logger.error("DATABASE_HOST environment variable is missing")
+            return
+        if os.environ.get("DATABASE_PASSWORD") is None:
+            logger.error("DATABASE_PASSWORD environment variable is missing")
+            return
+        if os.environ.get("DATABASE_HOST") is None:
+            logger.error("DATABASE_HOST environment variable is missing")
+            return
+        
+        database_name = os.environ.get("DATABASE_NAME")
+        database_user = os.environ.get("DATABASE_USER")
+        database_pass = os.environ.get("DATABASE_PASSWORD")
+        database_host = os.environ.get("DATABASE_HOST")
         # Connect to postgres database
         try:
             db_connection = psycopg.connect(
-                dbname="test_db",
-                user="test_user",
-                password="test_password",
-                host="localhost",
+                dbname=database_name,
+                user=database_user,
+                password=database_pass,
+                host=database_host,
                 port="5432"
             )
-        except:
-            logger.error("Error connecting to database")
+        except Exception as e:
+            logger.error(f"Error connecting to database: {e}")
             return
         queue = QueueConnection()
         body = self.model_data.model_dump_json()
@@ -50,6 +71,11 @@ class QueueConsumer():
 
 
 if __name__ == "__main__":
+
+    if os.environ.get('APPLICATION_ENV') == 'development':
+        logger.info("Running in development environment")
+        load_dotenv()
+
     op = None if len(sys.argv) == 1 else sys.argv[1]
     if op and op == "producer":
         logger.info("Starting publisher")
